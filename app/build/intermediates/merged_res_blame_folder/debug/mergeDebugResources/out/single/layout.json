@@ -1,0 +1,10 @@
+[
+    {
+        "merged": "com.extremis.browser.app-mergeDebugResources-36:/layout/activity_main.xml",
+        "source": "com.extremis.browser.app-main-39:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.extremis.browser.app-mergeDebugResources-36:/layout/dialog_video_download.xml",
+        "source": "com.extremis.browser.app-main-39:/layout/dialog_video_download.xml"
+    }
+]

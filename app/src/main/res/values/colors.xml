@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary blue palette -->
+    <color name="extremis_blue">#1565C0</color>
+    <color name="extremis_blue_dark">#0D47A1</color>
+    <color name="extremis_blue_light">#42A5F5</color>
+    <color name="extremis_blue_surface">#E3F2FD</color>
+    <color name="extremis_blue_accent">#2979FF</color>
+
+    <!-- Toolbar / status bar gradient anchors -->
+    <color name="toolbar_start">#0D47A1</color>
+    <color name="toolbar_end">#1976D2</color>
+
+    <!-- URL bar -->
+    <color name="url_bar_bg">#E8F0FE</color>
+    <color name="url_bar_stroke">#90CAF9</color>
+    <color name="url_bar_text">#1A237E</color>
+    <color name="url_bar_hint">#64B5F6</color>
+
+    <!-- Navigation bar -->
+    <color name="nav_bar_bg">#F5F9FF</color>
+    <color name="nav_divider">#BBDEFB</color>
+
+    <!-- Quick‑link chip colors -->
+    <color name="chip_stroke">#90CAF9</color>
+    <color name="chip_text">#1565C0</color>
+
+    <!-- FAB -->
+    <color name="fab_bg">#2962FF</color>
+    <color name="fab_icon">#FFFFFF</color>
+
+    <!-- Basics -->
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="page_bg">#FAFCFF</color>
+    <color name="ripple_blue">#331565C0</color>
+</resources>
