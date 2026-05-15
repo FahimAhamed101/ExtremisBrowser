@@ -1,0 +1,11 @@
+/.gradle-user
+/.gradle
+/build
+/.idea
+/.tmp
+/app/build
+/.android-home
+/debug.keystore
+/ExtremisBrowser_project.zip
+*.apk
+*.aab

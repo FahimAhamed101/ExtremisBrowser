@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<paths>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
     <external-path
         name="downloads"
         path="Download/ExtremisBrowser/" />
     <external-path
         name="public_downloads"
         path="Download/" />
+    <external-files-path
+        name="app_downloads"
+        path="Download/ExtremisBrowser/" />
 </paths>

@@ -9,10 +9,10 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.view.KeyEvent
+import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.webkit.CookieManager
-import android.webkit.DownloadListener
 import android.webkit.URLUtil
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
@@ -22,25 +22,22 @@ import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.PopupMenu
+import androidx.core.net.toUri
+import androidx.recyclerview.widget.GridLayoutManager
+import com.extremis.browser.adapters.HomeBookmarksAdapter
 import com.extremis.browser.databinding.ActivityMainBinding
 import com.extremis.browser.models.Bookmark
 import com.extremis.browser.models.HistoryItem
-import com.extremis.browser.models.VideoInfo
-import com.extremis.browser.models.VideoQuality
 import com.extremis.browser.utils.DatabaseHelper
-import com.extremis.browser.utils.UrlParser
-import com.extremis.browser.utils.VideoDownloader
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var databaseHelper: DatabaseHelper
-    private lateinit var urlParser: UrlParser
-    private lateinit var videoDownloader: VideoDownloader
+    private lateinit var homeBookmarksAdapter: HomeBookmarksAdapter
 
     private val homeUrl = "https://www.google.com"
-    private val facebookUrl = "https://m.facebook.com"
-    private val youtubeUrl = "https://m.youtube.com"
 
     private var isDesktopMode = false
     private var currentPageTitle = ""
@@ -51,16 +48,14 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         databaseHelper = DatabaseHelper(this)
-        urlParser = UrlParser()
-        videoDownloader = VideoDownloader(this)
 
         setupWebView()
+        setupHomeBookmarks()
         setupUi()
 
         if (savedInstanceState != null) {
             binding.webView.restoreState(savedInstanceState)
         } else {
-            // Handle incoming URL intent, or load home
             val intentUrl = intent?.data?.toString()
             loadUrl(intentUrl ?: homeUrl)
         }
@@ -78,10 +73,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        setIntent(intent)
         intent.data?.toString()?.let { loadUrl(it) }
     }
-
-    // ── WebView setup ───────────────────────────────────────────────────
 
     @SuppressLint("SetJavaScriptEnabled")
     private fun setupWebView() {
@@ -106,7 +100,8 @@ class MainActivity : AppCompatActivity() {
 
         binding.webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(
-                view: WebView?, request: WebResourceRequest?
+                view: WebView?,
+                request: WebResourceRequest?
             ): Boolean {
                 val target = request?.url ?: return false
                 return if (target.scheme == "http" || target.scheme == "https") {
@@ -121,7 +116,6 @@ class MainActivity : AppCompatActivity() {
                 super.onPageStarted(view, url, favicon)
                 binding.progressBar.show()
                 binding.urlInput.setText(url.orEmpty())
-                binding.fabVideoDownload.visibility = View.GONE
                 updateBrowserUi(url)
             }
 
@@ -132,14 +126,10 @@ class MainActivity : AppCompatActivity() {
                 binding.urlInput.setText(url.orEmpty())
                 updateBrowserUi(url)
 
-                // Save to history
                 if (!url.isNullOrEmpty() && !url.startsWith("about:")) {
                     val title = currentPageTitle.ifBlank { url }
                     databaseHelper.addToHistory(HistoryItem(title = title, url = url))
                 }
-
-                // Check for downloadable videos on page
-                checkForVideos(url.orEmpty())
             }
         }
 
@@ -157,29 +147,51 @@ class MainActivity : AppCompatActivity() {
             override fun onReceivedTitle(view: WebView?, title: String?) {
                 super.onReceivedTitle(view, title)
                 currentPageTitle = title ?: ""
-                val fallbackHost = view?.url?.let { Uri.parse(it).host }.orEmpty()
-                binding.topBar.subtitle =
-                    title?.takeUnless { it.isBlank() } ?: fallbackHost
+                val fallbackHost = view?.url?.let { it.toUri().host }.orEmpty()
+                binding.topBar.subtitle = title?.takeUnless { it.isBlank() } ?: fallbackHost
             }
         }
 
-        binding.webView.setDownloadListener(
-            DownloadListener { url, userAgent, contentDisposition, mimeType, _ ->
-                handleDownload(url, userAgent, contentDisposition, mimeType)
-            }
-        )
+        binding.webView.setDownloadListener { url, userAgent, contentDisposition, mimeType, _ ->
+            handleDownload(url, userAgent, contentDisposition, mimeType)
+        }
     }
 
-    // ── UI setup ────────────────────────────────────────────────────────
+    private fun setupHomeBookmarks() {
+        homeBookmarksAdapter = HomeBookmarksAdapter(
+            onOpen = { loadUrl(it.url) },
+            onAddBookmark = {
+                val url = binding.webView.url
+                if (!url.isNullOrEmpty() && url != homeUrl) {
+                    databaseHelper.addBookmark(Bookmark(title = currentPageTitle, url = url))
+                    loadHomeBookmarks()
+                    Toast.makeText(this, "Bookmark added", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this, "Open a page first to bookmark it", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+        )
+
+        binding.homeBookmarksRecycler.layoutManager = GridLayoutManager(this, 4)
+        binding.homeBookmarksRecycler.adapter = homeBookmarksAdapter
+
+        binding.homeBookmarksManageButton.setOnClickListener {
+            startActivity(Intent(this, BookmarksActivity::class.java))
+        }
+
+        loadHomeBookmarks()
+    }
+
+    private fun loadHomeBookmarks() {
+        val bookmarks = databaseHelper.getBookmarks()
+        homeBookmarksAdapter.submitList(bookmarks)
+    }
 
     private fun setupUi() {
         binding.goButton.setOnClickListener { loadFromInput() }
         binding.homeButton.setOnClickListener { loadUrl(homeUrl) }
-        binding.facebookButton.setOnClickListener { loadUrl(facebookUrl) }
-        binding.youtubeButton.setOnClickListener { loadUrl(youtubeUrl) }
-        binding.downloadsButton.setOnClickListener { openSystemDownloads() }
-        binding.shareButton.setOnClickListener { shareCurrentPage() }
-        binding.desktopModeButton.setOnClickListener { toggleDesktopMode() }
+
         binding.backButton.setOnClickListener {
             if (binding.webView.canGoBack()) binding.webView.goBack()
         }
@@ -190,22 +202,70 @@ class MainActivity : AppCompatActivity() {
 
         binding.urlInput.setOnEditorActionListener { _, actionId, event ->
             val shouldGo = actionId == EditorInfo.IME_ACTION_GO ||
-                    actionId == EditorInfo.IME_ACTION_DONE ||
-                    (event?.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)
-            if (shouldGo) { loadFromInput(); true } else false
+                actionId == EditorInfo.IME_ACTION_DONE ||
+                (event?.keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)
+            if (shouldGo) {
+                loadFromInput()
+                true
+            } else {
+                false
+            }
         }
 
-        // Swipe-to-refresh
         binding.swipeRefresh.setOnRefreshListener { binding.webView.reload() }
         binding.swipeRefresh.setColorSchemeResources(R.color.extremis_blue)
 
-        // Video download FAB
-        binding.fabVideoDownload.setOnClickListener { detectAndShowDownloadDialog() }
+        binding.topBar.setNavigationIcon(android.R.drawable.ic_menu_sort_by_size)
+        binding.topBar.setOnClickListener { showMenu(it) }
 
         updateBrowserUi(homeUrl)
     }
 
-    // ── URL loading ─────────────────────────────────────────────────────
+    private fun showMenu(view: View) {
+        val popup = PopupMenu(this, view)
+        popup.menuInflater.inflate(R.menu.main_menu, popup.menu)
+        popup.setOnMenuItemClickListener { item: MenuItem ->
+            when (item.itemId) {
+                R.id.action_save_bookmark -> {
+                    val url = binding.webView.url
+                    if (!url.isNullOrEmpty()) {
+                        databaseHelper.addBookmark(Bookmark(title = currentPageTitle, url = url))
+                        loadHomeBookmarks()
+                        Toast.makeText(this, "Bookmark saved", Toast.LENGTH_SHORT).show()
+                    }
+                    true
+                }
+
+                R.id.action_bookmarks -> {
+                    startActivity(Intent(this, BookmarksActivity::class.java))
+                    true
+                }
+
+                R.id.action_history -> {
+                    startActivity(Intent(this, HistoryActivity::class.java))
+                    true
+                }
+
+                R.id.action_downloads -> {
+                    startActivity(Intent(this, DownloadsActivity::class.java))
+                    true
+                }
+
+                R.id.action_system_downloads -> {
+                    openSystemDownloads()
+                    true
+                }
+
+                R.id.action_settings -> {
+                    startActivity(Intent(this, SettingsActivity::class.java))
+                    true
+                }
+
+                else -> false
+            }
+        }
+        popup.show()
+    }
 
     private fun loadFromInput() {
         val rawInput = binding.urlInput.text?.toString()?.trim().orEmpty()
@@ -213,7 +273,8 @@ class MainActivity : AppCompatActivity() {
 
         val target = when {
             rawInput.startsWith("http://", ignoreCase = true) ||
-                    rawInput.startsWith("https://", ignoreCase = true) -> rawInput
+                rawInput.startsWith("https://", ignoreCase = true) -> rawInput
+
             rawInput.contains(".") && !rawInput.contains(" ") -> "https://$rawInput"
             else -> "https://www.google.com/search?q=${Uri.encode(rawInput)}"
         }
@@ -224,106 +285,6 @@ class MainActivity : AppCompatActivity() {
     private fun loadUrl(url: String) {
         binding.webView.loadUrl(url)
     }
-
-    // ── Video detection ─────────────────────────────────────────────────
-
-    private fun checkForVideos(currentUrl: String) {
-        // Show the FAB if this is a known video platform page or if
-        // the URL itself is a direct video link
-        if (urlParser.isVideoUrl(currentUrl)) {
-            binding.fabVideoDownload.visibility = View.VISIBLE
-            return
-        }
-
-        // Try JS-based detection of <video> elements in the page
-        binding.webView.evaluateJavascript(
-            """
-            (function() {
-                var videos = document.getElementsByTagName('video');
-                return videos.length > 0;
-            })();
-            """.trimIndent()
-        ) { result ->
-            if (result == "true") {
-                binding.fabVideoDownload.visibility = View.VISIBLE
-            }
-        }
-    }
-
-    private fun detectAndShowDownloadDialog() {
-        val currentUrl = binding.webView.url ?: return
-
-        // Direct video file link → immediate dialog
-        if (currentUrl.matches(
-                Regex(
-                    ".*\\.(mp4|webm|ogg|mov|avi|mkv|flv|3gp|m4v)(\\?.*)?$",
-                    RegexOption.IGNORE_CASE
-                )
-            )
-        ) {
-            showDownloadDialog(
-                VideoInfo(
-                    title = currentUrl.substringAfterLast("/").substringBefore("?"),
-                    url = currentUrl,
-                    qualities = listOf(
-                        VideoQuality("Original Quality", currentUrl, "720", "MP4")
-                    )
-                )
-            )
-            return
-        }
-
-        // Inject JS to extract <video> / <source> elements from the page
-        binding.webView.evaluateJavascript(
-            """
-            (function() {
-                var videos = document.getElementsByTagName('video');
-                var sources = [];
-                for (var i = 0; i < videos.length; i++) {
-                    var v = videos[i];
-                    var ss = v.getElementsByTagName('source');
-                    if (ss.length > 0) {
-                        for (var j = 0; j < ss.length; j++) {
-                            sources.push({src: ss[j].src, type: ss[j].type || 'video/mp4',
-                                          width: v.videoWidth || 0, height: v.videoHeight || 0});
-                        }
-                    } else if (v.src) {
-                        sources.push({src: v.src, type: v.type || 'video/mp4',
-                                      width: v.videoWidth || 0, height: v.videoHeight || 0});
-                    }
-                }
-                return JSON.stringify(sources);
-            })();
-            """.trimIndent()
-        ) { result ->
-            handleJsVideoResult(result, currentUrl)
-        }
-    }
-
-    private fun handleJsVideoResult(result: String, currentUrl: String) {
-        val videoInfo = urlParser.parseVideoUrls(result, currentUrl)
-
-        if (videoInfo != null && videoInfo.qualities.isNotEmpty()) {
-            showDownloadDialog(videoInfo)
-        } else {
-            // Fallback: pass the page URL and let VideoDownloader
-            // extract qualities via OkHttp / server-side parsing
-            showDownloadDialog(
-                VideoInfo(
-                    title = currentPageTitle.ifBlank { urlParser.extractTitle(currentUrl) },
-                    url = currentUrl,
-                    qualities = emptyList()  // dialog will fetch
-                )
-            )
-        }
-    }
-
-    private fun showDownloadDialog(videoInfo: VideoInfo) {
-        VideoDownloadDialogFragment.newInstance(videoInfo)
-            .show(supportFragmentManager, "VideoDownloadDialog")
-    }
-
-    // ── Downloads ───────────────────────────────────────────────────────
 
     private fun handleDownload(
         url: String,
@@ -347,7 +308,7 @@ class MainActivity : AppCompatActivity() {
     ) {
         try {
             val fileName = URLUtil.guessFileName(url, contentDisposition, mimeType)
-            val request = DownloadManager.Request(Uri.parse(url)).apply {
+            val request = DownloadManager.Request(url.toUri()).apply {
                 if (mimeType.isNotBlank()) setMimeType(mimeType)
                 if (userAgent.isNotBlank()) addRequestHeader("User-Agent", userAgent)
                 CookieManager.getInstance().getCookie(url)?.let { cookies ->
@@ -359,19 +320,18 @@ class MainActivity : AppCompatActivity() {
                 allowScanningByMediaScanner()
                 setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
                 setDestinationInExternalPublicDir(
-                    android.os.Environment.DIRECTORY_DOWNLOADS, fileName
+                    android.os.Environment.DIRECTORY_DOWNLOADS,
+                    fileName
                 )
             }
 
-            val dm = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+            val dm = getSystemService(DOWNLOAD_SERVICE) as DownloadManager
             dm.enqueue(request)
             Toast.makeText(this, "Download started", Toast.LENGTH_SHORT).show()
         } catch (error: Exception) {
             Toast.makeText(this, "Download failed: ${error.message}", Toast.LENGTH_LONG).show()
         }
     }
-
-    // ── Share ───────────────────────────────────────────────────────────
 
     private fun shareCurrentPage() {
         val url = binding.webView.url ?: return
@@ -384,22 +344,19 @@ class MainActivity : AppCompatActivity() {
         startActivity(Intent.createChooser(shareIntent, "Share via"))
     }
 
-    // ── Desktop mode ────────────────────────────────────────────────────
-
     private fun toggleDesktopMode() {
         isDesktopMode = !isDesktopMode
         val settings = binding.webView.settings
 
         settings.userAgentString = if (isDesktopMode) {
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
-                    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         } else {
             WebSettings.getDefaultUserAgent(this)
         }
         settings.useWideViewPort = isDesktopMode
         settings.loadWithOverviewMode = isDesktopMode
 
-        binding.desktopModeButton.text = if (isDesktopMode) "Mobile" else "Desktop"
         binding.webView.reload()
 
         Toast.makeText(
@@ -409,8 +366,6 @@ class MainActivity : AppCompatActivity() {
         ).show()
     }
 
-    // ── Browser UI helpers ──────────────────────────────────────────────
-
     private fun updateBrowserUi(currentUrl: String?) {
         binding.backButton.isEnabled = binding.webView.canGoBack()
         binding.forwardButton.isEnabled = binding.webView.canGoForward()
@@ -419,9 +374,16 @@ class MainActivity : AppCompatActivity() {
             binding.urlInput.setText(currentUrl.orEmpty())
         }
 
-        val host = currentUrl?.let { Uri.parse(it).host }.orEmpty()
+        val host = currentUrl?.let { it.toUri().host }.orEmpty()
         if (binding.topBar.subtitle.isNullOrBlank()) {
-            binding.topBar.subtitle = host.ifBlank { "Direct file downloads only" }
+            binding.topBar.subtitle = host
+        }
+
+        if (currentUrl == homeUrl || currentUrl == "about:blank") {
+            binding.homeBookmarksContainer.visibility = View.VISIBLE
+            loadHomeBookmarks()
+        } else {
+            binding.homeBookmarksContainer.visibility = View.GONE
         }
     }
 
@@ -444,7 +406,12 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // ── Lifecycle ───────────────────────────────────────────────────────
+    override fun onResume() {
+        super.onResume()
+        if (binding.webView.url == homeUrl || binding.webView.url == "about:blank") {
+            loadHomeBookmarks()
+        }
+    }
 
     override fun onSaveInstanceState(outState: Bundle) {
         binding.webView.saveState(outState)
@@ -461,5 +428,14 @@ class MainActivity : AppCompatActivity() {
             destroy()
         }
         super.onDestroy()
+    }
+
+    companion object {
+        fun createLaunchIntent(context: Context, url: String): Intent {
+            return Intent(context, MainActivity::class.java).apply {
+                data = Uri.parse(url)
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            }
+        }
     }
 }

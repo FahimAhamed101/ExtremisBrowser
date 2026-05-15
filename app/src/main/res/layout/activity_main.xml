@@ -3,28 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@android:color/white">
-
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/topBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/extremis_blue"
-        app:subtitle="Direct file downloads only"
-        app:subtitleTextColor="@android:color/white"
-        app:title="Extremis Browser"
-        app:titleTextColor="@android:color/white" />
-
-    <com.google.android.material.progressindicator.LinearProgressIndicator
-        android:id="@+id/progressBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone" />
+    android:background="@android:color/white"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_vertical"
         android:orientation="horizontal"
         android:padding="8dp">
 
@@ -34,6 +19,7 @@
             android:layout_height="48dp"
             android:layout_weight="1"
             android:background="@drawable/url_bg"
+            android:gravity="center_vertical"
             android:hint="Enter website or search"
             android:imeOptions="actionGo"
             android:inputType="textUri"
@@ -47,61 +33,27 @@
             android:layout_height="48dp"
             android:layout_marginStart="8dp"
             android:text="Go" />
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/topBar"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="4dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/menu"
+            android:minHeight="0dp"
+            android:title=""
+            app:contentInsetEnd="0dp"
+            app:contentInsetLeft="0dp"
+            app:contentInsetRight="0dp"
+            app:contentInsetStart="0dp" />
     </LinearLayout>
 
-    <HorizontalScrollView
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/progressBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
-        android:paddingBottom="8dp"
-        android:scrollbars="none">
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/facebookButton"
-                style="@style/Widget.Material3.Button.OutlinedButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Facebook" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/youtubeButton"
-                style="@style/Widget.Material3.Button.OutlinedButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="YouTube" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/downloadsButton"
-                style="@style/Widget.Material3.Button.OutlinedButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="Downloads" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/shareButton"
-                style="@style/Widget.Material3.Button.OutlinedButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="Share" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/desktopModeButton"
-                style="@style/Widget.Material3.Button.OutlinedButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="Desktop" />
-        </LinearLayout>
-    </HorizontalScrollView>
+        android:visibility="gone" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -147,7 +99,6 @@
             android:text="Home" />
     </LinearLayout>
 
-    <!-- SwipeRefreshLayout wrapping WebView -->
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefresh"
         android:layout_width="match_parent"
@@ -163,18 +114,60 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
-            <!-- Video download FAB, hidden by default -->
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fabVideoDownload"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/homeBookmarksContainer"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom|end"
-                android:layout_margin="16dp"
-                android:src="@android:drawable/stat_sys_download"
-                android:contentDescription="Download video"
-                android:visibility="gone"
-                app:backgroundTint="@color/extremis_blue"
-                app:tint="@android:color/white" />
+                android:layout_gravity="top"
+                android:layout_margin="12dp"
+                android:background="@drawable/url_bg"
+                android:orientation="vertical"
+                android:padding="12dp"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/homeBookmarksTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/bookmarks"
+                        android:textColor="@color/url_bar_text"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/homeBookmarksManageButton"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/open_bookmarks" />
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/homeBookmarksRecycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:clipToPadding="false"
+                    android:nestedScrollingEnabled="false"
+                    android:paddingBottom="4dp" />
+
+                <TextView
+                    android:id="@+id/homeBookmarksEmptyView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:gravity="center"
+                    android:text="@string/home_bookmarks_empty"
+                    android:textColor="@android:color/darker_gray"
+                    android:visibility="gone" />
+            </LinearLayout>
         </FrameLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

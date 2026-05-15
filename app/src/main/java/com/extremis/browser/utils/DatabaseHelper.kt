@@ -49,8 +49,6 @@ class DatabaseHelper(context: Context) :
         onCreate(db)
     }
 
-    // ── Bookmarks ───────────────────────────────────────────────────────
-
     fun addBookmark(bookmark: Bookmark): Long {
         val values = ContentValues().apply {
             put(COL_TITLE, bookmark.title)
@@ -63,7 +61,12 @@ class DatabaseHelper(context: Context) :
     fun getBookmarks(): List<Bookmark> {
         val list = mutableListOf<Bookmark>()
         val cursor = readableDatabase.query(
-            TABLE_BOOKMARKS, null, null, null, null, null,
+            TABLE_BOOKMARKS,
+            null,
+            null,
+            null,
+            null,
+            null,
             "$COL_DATE DESC"
         )
         cursor.use {
@@ -85,18 +88,29 @@ class DatabaseHelper(context: Context) :
         writableDatabase.delete(TABLE_BOOKMARKS, "$COL_ID = ?", arrayOf(id.toString()))
     }
 
+    fun deleteBookmarkByUrl(url: String) {
+        writableDatabase.delete(TABLE_BOOKMARKS, "$COL_URL = ?", arrayOf(url))
+    }
+
+    fun clearBookmarks() {
+        writableDatabase.delete(TABLE_BOOKMARKS, null, null)
+    }
+
     fun isBookmarked(url: String): Boolean {
         val cursor = readableDatabase.query(
-            TABLE_BOOKMARKS, arrayOf(COL_ID),
-            "$COL_URL = ?", arrayOf(url),
-            null, null, null, "1"
+            TABLE_BOOKMARKS,
+            arrayOf(COL_ID),
+            "$COL_URL = ?",
+            arrayOf(url),
+            null,
+            null,
+            null,
+            "1"
         )
         val exists = cursor.count > 0
         cursor.close()
         return exists
     }
-
-    // ── History ─────────────────────────────────────────────────────────
 
     fun addToHistory(item: HistoryItem): Long {
         val values = ContentValues().apply {
@@ -110,8 +124,14 @@ class DatabaseHelper(context: Context) :
     fun getHistory(): List<HistoryItem> {
         val list = mutableListOf<HistoryItem>()
         val cursor = readableDatabase.query(
-            TABLE_HISTORY, null, null, null, null, null,
-            "$COL_TIMESTAMP DESC", "200"
+            TABLE_HISTORY,
+            null,
+            null,
+            null,
+            null,
+            null,
+            "$COL_TIMESTAMP DESC",
+            "200"
         )
         cursor.use {
             while (it.moveToNext()) {
@@ -130,5 +150,9 @@ class DatabaseHelper(context: Context) :
 
     fun clearHistory() {
         writableDatabase.delete(TABLE_HISTORY, null, null)
+    }
+
+    fun deleteHistoryItem(id: Long) {
+        writableDatabase.delete(TABLE_HISTORY, "$COL_ID = ?", arrayOf(id.toString()))
     }
 }
