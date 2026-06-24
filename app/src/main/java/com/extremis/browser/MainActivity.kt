@@ -438,8 +438,8 @@ class MainActivity : AppCompatActivity() {
         val item = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER
-            setPadding(dp(6), 0, dp(6), 0)
-            layoutParams = LinearLayout.LayoutParams(dp(80), ViewGroup.LayoutParams.MATCH_PARENT)
+            setPadding(dp(4), 0, dp(4), 0)
+            layoutParams = LinearLayout.LayoutParams(dp(72), ViewGroup.LayoutParams.MATCH_PARENT)
             setOnClickListener {
                 if (link.isAddTile) {
                     openAddBookmarkShortcut()
@@ -448,9 +448,11 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+        val iconSize = dp(56)
         val icon = TextView(this).apply {
-            width = dp(52)
-            height = dp(52)
+            layoutParams = LinearLayout.LayoutParams(iconSize, iconSize).apply {
+                gravity = Gravity.CENTER_HORIZONTAL
+            }
             gravity = Gravity.CENTER
             background = ContextCompat.getDrawable(this@MainActivity, R.drawable.chrome_quick_icon_bg)
             text = link.initial
