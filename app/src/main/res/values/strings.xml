@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Extremis Browser</string>
     <string name="bookmarks">Bookmarks</string>
     <string name="history">History</string>
     <string name="downloads">Downloads</string>
@@ -45,4 +46,17 @@
     <string name="status_paused">Paused</string>
     <string name="status_failed">Failed</string>
     <string name="status_unknown">Unknown</string>
+    <string name="close_tab">Close tab</string>
+    <string name="new_tab">New tab</string>
+    <string name="new_incognito_tab">New Incognito tab</string>
+    <string name="delete_browsing_data">Delete browsing data</string>
+    <string name="recent_tabs">Recent tabs</string>
+    <string name="help_feedback">Help and feedback</string>
+    <string name="search_or_type_url">Search or type URL</string>
+    <string name="search_your_tabs">Search your tabs</string>
+    <string name="continue_with_this_tab">Continue with this tab</string>
+    <string name="discover">Discover</string>
+    <string name="see_more">See more</string>
+    <string name="incognito_home">Incognito tab</string>
+    <string name="browsing_data_deleted">Browsing data deleted</string>
 </resources>

@@ -20,8 +20,8 @@ android {
         applicationId = "com.extremis.browser"
         minSdk = 24
         targetSdk = 35
-        versionCode = 9
-        versionName = "9.0"
+        versionCode = 10
+        versionName = "10.0"
 
         ndk {
             abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64")
@@ -73,4 +73,8 @@ dependencies {
 
     // Lifecycle
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
+    implementation("androidx.lifecycle:lifecycle-process:2.7.0")
+
+    // Ads
+    implementation("com.google.android.gms:play-services-ads:23.6.0")
 }

@@ -34,4 +34,25 @@
     <color name="white">#FFFFFF</color>
     <color name="page_bg">#FAFCFF</color>
     <color name="ripple_blue">#331565C0</color>
+
+    <!-- Chrome-like browser surface -->
+    <color name="chrome_page_bg">#F7F5FC</color>
+    <color name="chrome_card_bg">#FFFFFF</color>
+    <color name="chrome_search_bg">#E5E6F2</color>
+    <color name="chrome_quick_bg">#E3E5F1</color>
+    <color name="chrome_text">#171821</color>
+    <color name="chrome_muted">#5B5D6B</color>
+    <color name="chrome_blue">#4F66A3</color>
+    <color name="chrome_red">#D84635</color>
+    <color name="google_blue">#4285F4</color>
+    <color name="google_red">#EA4335</color>
+    <color name="google_yellow">#FBBC05</color>
+    <color name="google_green">#34A853</color>
+
+    <!-- Incognito surface -->
+    <color name="incognito_page_bg">#202124</color>
+    <color name="incognito_card_bg">#2B2C31</color>
+    <color name="incognito_search_bg">#30323A</color>
+    <color name="incognito_text">#F1F3F4</color>
+    <color name="incognito_muted">#BDC1C6</color>
 </resources>

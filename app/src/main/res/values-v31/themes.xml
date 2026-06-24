@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Theme.ExtremisBrowser" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/extremis_blue</item>
+        <item name="colorPrimaryContainer">@color/extremis_blue_surface</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/extremis_blue_accent</item>
+        <item name="colorSurface">@color/page_bg</item>
+        <item name="android:statusBarColor">@color/extremis_blue_dark</item>
+        <item name="android:navigationBarColor">@color/nav_bar_bg</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
+        <item name="android:colorControlHighlight">@color/ripple_blue</item>
+        <item name="android:windowSplashScreenBackground">@android:color/white</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_icon</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">@android:color/white</item>
+    </style>
+
+</resources>
