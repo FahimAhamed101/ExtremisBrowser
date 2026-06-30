@@ -24,11 +24,14 @@ class ExtremisBrowserApplication : Application(), Application.ActivityLifecycleC
         registerActivityLifecycleCallbacks(this)
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
         MobileAds.initialize(this) {
-            appOpenAdManager.loadAd(this)
+            if (!IncognitoModeState.isIncognitoActive) {
+                appOpenAdManager.loadAd(this)
+            }
         }
     }
 
     override fun onStart(owner: LifecycleOwner) {
+        if (IncognitoModeState.isIncognitoActive) return
         currentActivity?.let { appOpenAdManager.showAdIfAvailable(it) }
     }
 
@@ -67,12 +70,13 @@ class ExtremisBrowserApplication : Application(), Application.ActivityLifecycleC
         private var loadTime = 0L
 
         fun loadAd(application: Application) {
+            if (IncognitoModeState.isIncognitoActive) return
             if (isLoadingAd || isAdAvailable()) return
 
             isLoadingAd = true
             AppOpenAd.load(
                 application,
-                AdConfig.APP_OPEN_AD_UNIT_ID,
+                application.getString(R.string.app_open_ad_unit_id),
                 AdRequest.Builder().build(),
                 object : AppOpenAd.AppOpenAdLoadCallback() {
                     override fun onAdLoaded(ad: AppOpenAd) {
@@ -89,6 +93,7 @@ class ExtremisBrowserApplication : Application(), Application.ActivityLifecycleC
         }
 
         fun showAdIfAvailable(activity: Activity) {
+            if (IncognitoModeState.isIncognitoActive) return
             if (isShowingAd) return
 
             val ad = appOpenAd

@@ -35,6 +35,12 @@ import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.doOnLayout
+import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.GridLayoutManager
 import com.extremis.browser.adapters.BrowserTabsAdapter
 import com.extremis.browser.databinding.ActivityMainBinding
@@ -62,6 +68,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var databaseHelper: DatabaseHelper
     private lateinit var tabsAdapter: BrowserTabsAdapter
+    private lateinit var tabsLayoutManager: GridLayoutManager
 
     private val tabs = mutableListOf<BrowserTab>()
     private val homeUrl = BrowserTab.NEW_TAB_URL
@@ -71,6 +78,12 @@ class MainActivity : AppCompatActivity() {
     private var interstitialLoading = false
     private var bannerAdView: AdView? = null
     private var nativeAd: NativeAd? = null
+    private var lastAppliedIncognito: Boolean? = null
+    private lateinit var topControlsBasePadding: ViewPadding
+    private lateinit var homeContentBasePadding: ViewPadding
+    private lateinit var swipeRefreshBasePadding: ViewPadding
+    private lateinit var adContainerBasePadding: ViewPadding
+    private lateinit var tabSwitcherBasePadding: ViewPadding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,6 +93,7 @@ class MainActivity : AppCompatActivity() {
         databaseHelper = DatabaseHelper(this)
         tabs.add(BrowserTab())
 
+        setupWindowInsets()
         setupWebView()
         setupTabs()
         setupUi()
@@ -224,6 +238,15 @@ class MainActivity : AppCompatActivity() {
         binding.urlInput.setOnEditorActionListener { _, actionId, event ->
             submitInput(binding.urlInput.text?.toString(), actionId, event)
         }
+        binding.urlInput.setSelectAllOnFocus(true)
+        binding.urlInput.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                binding.urlInput.post { binding.urlInput.selectAll() }
+            }
+        }
+        binding.urlInput.setOnClickListener {
+            binding.urlInput.post { binding.urlInput.selectAll() }
+        }
         binding.homeSearchInput.setOnEditorActionListener { _, actionId, event ->
             submitInput(binding.homeSearchInput.text?.toString(), actionId, event)
         }
@@ -248,6 +271,55 @@ class MainActivity : AppCompatActivity() {
         refreshTabUi()
     }
 
+    private fun setupWindowInsets() {
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        topControlsBasePadding = binding.topControls.capturePadding()
+        homeContentBasePadding = binding.homeContent.capturePadding()
+        swipeRefreshBasePadding = binding.swipeRefresh.capturePadding()
+        adContainerBasePadding = binding.adViewContainer.capturePadding()
+        tabSwitcherBasePadding = binding.tabSwitcherPanel.capturePadding()
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+            binding.topControls.updatePadding(
+                left = topControlsBasePadding.left + systemBars.left,
+                top = topControlsBasePadding.top + systemBars.top,
+                right = topControlsBasePadding.right + systemBars.right,
+                bottom = topControlsBasePadding.bottom
+            )
+            binding.homeContent.updatePadding(
+                left = homeContentBasePadding.left + systemBars.left,
+                top = homeContentBasePadding.top,
+                right = homeContentBasePadding.right + systemBars.right,
+                bottom = homeContentBasePadding.bottom + systemBars.bottom
+            )
+            binding.swipeRefresh.updatePadding(
+                left = swipeRefreshBasePadding.left + systemBars.left,
+                top = swipeRefreshBasePadding.top,
+                right = swipeRefreshBasePadding.right + systemBars.right,
+                bottom = swipeRefreshBasePadding.bottom + systemBars.bottom
+            )
+            binding.adViewContainer.updatePadding(
+                left = adContainerBasePadding.left + systemBars.left,
+                top = adContainerBasePadding.top,
+                right = adContainerBasePadding.right + systemBars.right,
+                bottom = adContainerBasePadding.bottom + systemBars.bottom
+            )
+            binding.tabSwitcherPanel.updatePadding(
+                left = tabSwitcherBasePadding.left + systemBars.left,
+                top = tabSwitcherBasePadding.top + systemBars.top,
+                right = tabSwitcherBasePadding.right + systemBars.right,
+                bottom = tabSwitcherBasePadding.bottom + systemBars.bottom
+            )
+
+            insets
+        }
+
+        ViewCompat.requestApplyInsets(binding.root)
+    }
+
     private fun setupTabs() {
         tabsAdapter = BrowserTabsAdapter(
             onOpen = { index ->
@@ -258,16 +330,17 @@ class MainActivity : AppCompatActivity() {
             },
             onClose = { index -> closeTab(index) }
         )
-        binding.tabsRecycler.layoutManager = GridLayoutManager(this, 2)
+        tabsLayoutManager = GridLayoutManager(this, 2)
+        binding.tabsRecycler.layoutManager = tabsLayoutManager
         binding.tabsRecycler.adapter = tabsAdapter
+        binding.tabsRecycler.doOnLayout { updateTabGridSpanCount() }
     }
 
     private fun setupAds() {
+        refreshAdVisibility()
         runCatching {
             MobileAds.initialize(this) {
-                loadInterstitialAd()
-                loadBannerAd()
-                loadNativeAd()
+                refreshAdVisibility(forceReload = true)
             }
         }.onFailure {
             binding.adViewContainer.visibility = View.GONE
@@ -276,24 +349,46 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadBannerAd() {
+        if (IncognitoModeState.isIncognitoActive) {
+            binding.adViewContainer.visibility = View.GONE
+            return
+        }
+
         binding.adViewContainer.post {
             val adWidth = getBannerAdWidth()
-            if (adWidth <= 0) return@post
+            if (adWidth <= 0) {
+                binding.adViewContainer.visibility = View.GONE
+                return@post
+            }
 
             val adView = AdView(this).apply {
-                adUnitId = AdConfig.BANNER_AD_UNIT_ID
+                adUnitId = getString(R.string.banner_ad_unit_id)
                 setAdSize(
                     AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
                         this@MainActivity,
                         adWidth
                     )
                 )
+                adListener = object : AdListener() {
+                    override fun onAdLoaded() {
+                        binding.adViewContainer.visibility = View.VISIBLE
+                    }
+
+                    override fun onAdFailedToLoad(error: LoadAdError) {
+                        if (bannerAdView === this@apply) {
+                            bannerAdView = null
+                        }
+                        binding.adViewContainer.removeAllViews()
+                        binding.adViewContainer.visibility = View.GONE
+                    }
+                }
             }
 
             bannerAdView?.destroy()
             bannerAdView = adView
             binding.adViewContainer.removeAllViews()
             binding.adViewContainer.addView(adView)
+            binding.adViewContainer.visibility = View.GONE
             adView.loadAd(AdRequest.Builder().build())
         }
     }
@@ -306,11 +401,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadInterstitialAd() {
+        if (IncognitoModeState.isIncognitoActive) return
         if (interstitialLoading || interstitialAd != null) return
         interstitialLoading = true
         InterstitialAd.load(
             this,
-            AdConfig.INTERSTITIAL_AD_UNIT_ID,
+            getString(R.string.interstitial_ad_unit_id),
             AdRequest.Builder().build(),
             object : InterstitialAdLoadCallback() {
                 override fun onAdLoaded(ad: InterstitialAd) {
@@ -342,6 +438,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showInterstitialIfReady() {
+        if (IncognitoModeState.isIncognitoActive) return
         val ad = interstitialAd
         if (ad == null) {
             loadInterstitialAd()
@@ -351,9 +448,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadNativeAd() {
+        if (IncognitoModeState.isIncognitoActive) {
+            binding.nativeAdContainer.visibility = View.GONE
+            return
+        }
+
         binding.nativeAdContainer.visibility = View.GONE
 
-        val adLoader = AdLoader.Builder(this, AdConfig.NATIVE_AD_UNIT_ID)
+        val adLoader = AdLoader.Builder(this, getString(R.string.native_ad_unit_id))
             .forNativeAd { loadedNativeAd ->
                 if (isDestroyed || isFinishing) {
                     loadedNativeAd.destroy()
@@ -583,7 +685,15 @@ class MainActivity : AppCompatActivity() {
         binding.adViewContainer.setBackgroundColor(page)
         window.statusBarColor = page
         window.navigationBarColor = page
+        WindowInsetsControllerCompat(window, binding.root).apply {
+            isAppearanceLightStatusBars = true
+            isAppearanceLightNavigationBars = true
+        }
 
+        applyHomeSurfaceTheme(
+            searchColorRes = R.color.chrome_search_bg,
+            cardColorRes = R.color.chrome_card_bg
+        )
         binding.urlInput.setTextColor(text)
         binding.urlInput.setHintTextColor(muted)
         binding.homeSearchInput.setTextColor(text)
@@ -608,7 +718,15 @@ class MainActivity : AppCompatActivity() {
         binding.adViewContainer.setBackgroundColor(page)
         window.statusBarColor = page
         window.navigationBarColor = page
+        WindowInsetsControllerCompat(window, binding.root).apply {
+            isAppearanceLightStatusBars = false
+            isAppearanceLightNavigationBars = false
+        }
 
+        applyHomeSurfaceTheme(
+            searchColorRes = R.color.incognito_search_bg,
+            cardColorRes = R.color.incognito_card_bg
+        )
         binding.urlInput.setTextColor(text)
         binding.urlInput.setHintTextColor(muted)
         binding.homeSearchInput.setTextColor(text)
@@ -677,11 +795,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun refreshTabUi() {
+        updateTabGridSpanCount()
         val tabCount = tabs.size.coerceAtLeast(1).toString()
+        val borderColorRes = if (isCurrentTabIncognito()) {
+            R.color.incognito_text
+        } else {
+            R.color.chrome_text
+        }
         binding.tabCountButton.text = tabCount
-        binding.tabCountButton.background = ContextCompat.getDrawable(this, R.drawable.chrome_tab_count_bg)
+        binding.tabCountButton.background = buildTabCountBackground(borderColorRes)
         binding.tabSwitcherCount.text = tabCount
-        binding.tabSwitcherCount.background = ContextCompat.getDrawable(this, R.drawable.chrome_tab_count_bg)
+        binding.tabSwitcherCount.background = buildTabCountBackground(borderColorRes)
         tabsAdapter.submitTabs(tabs, currentTabIndex, binding.tabSearchInput.text?.toString().orEmpty())
     }
 
@@ -721,12 +845,13 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, R.string.app_name, Toast.LENGTH_SHORT).show()
         })
 
-        val popup = PopupWindow(content, dp(264), ViewGroup.LayoutParams.WRAP_CONTENT, true).apply {
+        val popupWidth = (resources.displayMetrics.widthPixels - dp(16)).coerceAtMost(dp(320))
+        val popup = PopupWindow(content, popupWidth, ViewGroup.LayoutParams.WRAP_CONTENT, true).apply {
             elevation = dp(8).toFloat()
             setBackgroundDrawable(ColorDrawable(android.graphics.Color.TRANSPARENT))
             isOutsideTouchable = true
         }
-        popup.showAsDropDown(anchor, -dp(248), -dp(4))
+        popup.showAsDropDown(anchor, anchor.width - popupWidth, -dp(4))
     }
 
     private fun createMenuIconRow(): View {
@@ -840,22 +965,114 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun applyPrivacyMode() {
-        binding.webView.settings.cacheMode = if (isCurrentTabIncognito()) {
+        val incognito = isCurrentTabIncognito()
+        val modeChanged = lastAppliedIncognito != incognito
+
+        IncognitoModeState.isIncognitoActive = incognito
+        binding.webView.settings.cacheMode = if (incognito) {
             WebSettings.LOAD_NO_CACHE
         } else {
             WebSettings.LOAD_DEFAULT
         }
-        if (isCurrentTabIncognito()) {
+        CookieManager.getInstance().setAcceptThirdPartyCookies(binding.webView, !incognito)
+
+        if (modeChanged) {
+            binding.webView.clearHistory()
+            binding.webView.clearFormData()
+            binding.webView.clearSslPreferences()
+            if (!incognito) {
+                clearPrivateWebData()
+            }
+            refreshAdVisibility(forceReload = !incognito)
+            lastAppliedIncognito = incognito
+        }
+
+        if (incognito) {
             binding.webView.clearCache(false)
         }
     }
 
     private fun clearPrivateWebData() {
+        binding.webView.clearHistory()
+        binding.webView.clearFormData()
+        binding.webView.clearSslPreferences()
         binding.webView.clearCache(true)
         WebStorage.getInstance().deleteAllData()
         CookieManager.getInstance().removeSessionCookies(null)
         CookieManager.getInstance().flush()
     }
+
+    private fun refreshAdVisibility(forceReload: Boolean = false) {
+        val shouldShowAds = !IncognitoModeState.isIncognitoActive
+        if (!shouldShowAds) {
+            binding.adViewContainer.removeAllViews()
+            binding.adViewContainer.visibility = View.GONE
+            bannerAdView?.destroy()
+            bannerAdView = null
+
+            binding.nativeAdContainer.removeAllViews()
+            binding.nativeAdContainer.visibility = View.GONE
+            nativeAd?.destroy()
+            nativeAd = null
+
+            interstitialAd = null
+            interstitialLoading = false
+            return
+        }
+
+        if (forceReload || bannerAdView == null) {
+            loadBannerAd()
+        } else {
+            binding.adViewContainer.visibility = View.VISIBLE
+        }
+
+        if (forceReload || nativeAd == null || binding.nativeAdContainer.childCount == 0) {
+            loadNativeAd()
+        } else {
+            binding.nativeAdContainer.visibility = View.VISIBLE
+        }
+
+        loadInterstitialAd()
+    }
+
+    private fun updateTabGridSpanCount() {
+        if (!::tabsLayoutManager.isInitialized) return
+        val recyclerWidth = binding.tabsRecycler.width.takeIf { it > 0 }
+            ?: resources.displayMetrics.widthPixels
+        val spanCount = (recyclerWidth / dp(180)).coerceIn(1, 4)
+        if (tabsLayoutManager.spanCount != spanCount) {
+            tabsLayoutManager.spanCount = spanCount
+        }
+    }
+
+    private fun applyHomeSurfaceTheme(searchColorRes: Int, cardColorRes: Int) {
+        binding.compactUrlBar.background = buildRoundedBackground(searchColorRes, 28)
+        binding.homeSearchBar.background = buildRoundedBackground(searchColorRes, 28)
+        binding.tabSearchInput.background = buildRoundedBackground(searchColorRes, 28)
+        binding.quickLinksScroller.background = buildRoundedBackground(cardColorRes, 22)
+        binding.continueCard.background = buildRoundedBackground(cardColorRes, 22)
+        binding.discoverCard.background = buildRoundedBackground(cardColorRes, 22)
+        binding.nativeAdContainer.setBackgroundColor(resolveColor(cardColorRes))
+    }
+
+    private fun buildRoundedBackground(colorRes: Int, radiusDp: Int): GradientDrawable {
+        return GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            cornerRadius = dp(radiusDp).toFloat()
+            setColor(resolveColor(colorRes))
+        }
+    }
+
+    private fun buildTabCountBackground(strokeColorRes: Int): GradientDrawable {
+        return GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            cornerRadius = dp(4).toFloat()
+            setColor(android.graphics.Color.TRANSPARENT)
+            setStroke(dp(1), resolveColor(strokeColorRes))
+        }
+    }
+
+    private fun resolveColor(colorRes: Int): Int = ContextCompat.getColor(this, colorRes)
 
     private fun handleDownload(
         url: String,
@@ -907,6 +1124,7 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         bannerAdView?.resume()
+        refreshAdVisibility()
         refreshTabUi()
     }
 
@@ -916,6 +1134,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        IncognitoModeState.isIncognitoActive = false
         bannerAdView?.destroy()
         bannerAdView = null
         nativeAd?.destroy()
@@ -936,6 +1155,22 @@ class MainActivity : AppCompatActivity() {
         val url: String?,
         val isAddTile: Boolean = false
     )
+
+    private data class ViewPadding(
+        val left: Int,
+        val top: Int,
+        val right: Int,
+        val bottom: Int
+    )
+
+    private fun View.capturePadding(): ViewPadding {
+        return ViewPadding(
+            left = paddingLeft,
+            top = paddingTop,
+            right = paddingRight,
+            bottom = paddingBottom
+        )
+    }
 
     companion object {
         fun createLaunchIntent(context: Context, url: String): Intent {

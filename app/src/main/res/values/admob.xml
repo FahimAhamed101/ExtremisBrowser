@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="admob_application_id" translatable="false">ca-app-pub-7830531573570855~8248849622</string>
+    <string name="banner_ad_unit_id" translatable="false">ca-app-pub-7830531573570855/3893269270</string>
+    <string name="interstitial_ad_unit_id" translatable="false">ca-app-pub-7830531573570855/6284463044</string>
+    <string name="native_ad_unit_id" translatable="false">ca-app-pub-7830531573570855/6758839835</string>
+    <string name="app_open_ad_unit_id" translatable="false">ca-app-pub-7830531573570855/1167867737</string>
 </resources>

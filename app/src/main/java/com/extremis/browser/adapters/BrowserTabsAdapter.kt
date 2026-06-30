@@ -53,7 +53,12 @@ class BrowserTabsAdapter(
 
         fun bind(tab: BrowserTab, originalIndex: Int, selected: Boolean) {
             binding.cardRoot.setBackgroundResource(
-                if (selected) R.drawable.chrome_tab_card_selected_bg else R.drawable.chrome_tab_card_bg
+                when {
+                    tab.incognito && selected -> R.drawable.incognito_tab_card_selected_bg
+                    tab.incognito -> R.drawable.incognito_tab_card_bg
+                    selected -> R.drawable.chrome_tab_card_selected_bg
+                    else -> R.drawable.chrome_tab_card_bg
+                }
             )
             binding.titleView.text = tab.title.ifBlank {
                 if (tab.incognito) {
@@ -72,6 +77,9 @@ class BrowserTabsAdapter(
             } else {
                 binding.root.context.getString(R.string.app_name)
             }
+            binding.previewSurface.setBackgroundResource(
+                if (tab.incognito) R.drawable.incognito_tab_card_bg else R.drawable.chrome_search_bg
+            )
             binding.root.setOnClickListener { onOpen(originalIndex) }
             binding.closeButton.setOnClickListener { onClose(originalIndex) }
         }

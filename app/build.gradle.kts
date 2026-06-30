@@ -20,8 +20,8 @@ android {
         applicationId = "com.extremis.browser"
         minSdk = 24
         targetSdk = 35
-        versionCode = 11
-        versionName = "11.0"
+        versionCode = 12
+        versionName = "12.0"
 
         ndk {
             abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64")

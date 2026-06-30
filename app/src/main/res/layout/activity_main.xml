@@ -277,8 +277,8 @@
                             android:orientation="horizontal">
 
                             <TextView
-                                android:layout_width="96dp"
-                                android:layout_height="96dp"
+                                android:layout_width="84dp"
+                                android:layout_height="84dp"
                                 android:background="@drawable/continue_thumb_bg"
                                 android:gravity="center"
                                 android:padding="8dp"
@@ -382,8 +382,8 @@
                             </LinearLayout>
 
                             <TextView
-                                android:layout_width="84dp"
-                                android:layout_height="84dp"
+                                android:layout_width="72dp"
+                                android:layout_height="72dp"
                                 android:layout_marginStart="12dp"
                                 android:background="@drawable/discover_image_bg"
                                 android:gravity="center"
@@ -419,7 +419,7 @@
             android:layout_height="wrap_content"
             android:background="@color/chrome_page_bg"
             android:foregroundGravity="center"
-            android:minHeight="50dp" />
+            android:visibility="gone" />
     </LinearLayout>
 
     <LinearLayout
