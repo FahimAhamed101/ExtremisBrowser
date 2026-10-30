@@ -3,7 +3,7 @@
     android:id="@+id/nativeAdView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/chrome_card_bg"
+    android:background="@drawable/chrome_card_outlined_bg"
     android:padding="16dp">
 
     <LinearLayout
@@ -25,7 +25,7 @@
                 android:gravity="center"
                 android:minWidth="30dp"
                 android:paddingHorizontal="7dp"
-                android:text="Ad"
+                android:text="@string/ad_label"
                 android:textColor="@color/chrome_text"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -40,6 +40,24 @@
                 android:maxLines="1"
                 android:textColor="@color/chrome_muted"
                 android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/adPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:textColor="@color/chrome_muted"
+                android:textSize="12sp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/adStore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:textColor="@color/chrome_muted"
+                android:textSize="12sp"
+                android:visibility="gone" />
         </LinearLayout>
 
         <LinearLayout
@@ -53,7 +71,7 @@
                 android:id="@+id/adAppIcon"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:background="@drawable/chrome_quick_icon_bg"
+                android:background="@drawable/chrome_thumb_bg"
                 android:contentDescription="@null"
                 android:padding="4dp"
                 android:scaleType="centerCrop" />

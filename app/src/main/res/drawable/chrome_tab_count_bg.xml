@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Chrome's tab counter: a rounded square outline around the tab number. -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
     <solid android:color="@android:color/transparent" />
-    <corners android:radius="4dp" />
+    <corners android:radius="6dp" />
     <stroke
-        android:width="1.5dp"
+        android:width="2dp"
         android:color="@color/chrome_text" />
 </shape>

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+<map>
+    <boolean name="DESKTOP" value="true" />
+    <boolean name="AD_FREE_KEY" value="true" />
+    <boolean name="RATE_PROMPT_HANDLED" value="true" />
+    <int name="NUMBER_OF_LAUNCH" value="54" />
+</map>

@@ -1,11 +1,28 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
 }
 
+/*
+ * Release signing.
+ *
+ * The key and its passwords live in keystore.properties, which is gitignored — a keystore that
+ * leaks into the repository is a keystore that has to be replaced. When the file is absent (a
+ * fresh clone, CI without secrets) the release build simply stays unsigned instead of failing,
+ * so `assembleDebug` and plain `assembleRelease` still work.
+ */
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystoreProperties = Properties().apply {
+    if (keystorePropertiesFile.exists()) {
+        keystorePropertiesFile.inputStream().use { load(it) }
+    }
+}
+
 android {
     namespace = "com.extremis.browser"
-    compileSdk = 35
+    compileSdk = 36
 
     signingConfigs {
         getByName("debug") {
@@ -14,14 +31,22 @@ android {
             keyAlias = "androiddebugkey"
             keyPassword = "android"
         }
+        if (keystorePropertiesFile.exists()) {
+            create("release") {
+                storeFile = rootProject.file(keystoreProperties.getProperty("storeFile"))
+                storePassword = keystoreProperties.getProperty("storePassword")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+            }
+        }
     }
 
     defaultConfig {
         applicationId = "com.extremis.browser"
         minSdk = 24
-        targetSdk = 35
-        versionCode = 12
-        versionName = "12.0"
+        targetSdk = 36
+        versionCode = 17
+        versionName = "17.0"
 
         ndk {
             abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64")
@@ -35,11 +60,16 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
         release {
+            // Left unminified on purpose: the media bridge and the injected scripts are reached by
+            // name from page script, and a shrunk build would need keep rules for all of it.
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            if (keystorePropertiesFile.exists()) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
 
@@ -71,10 +101,16 @@ dependencies {
     // SwipeRefreshLayout
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 
+    // addDocumentStartJavaScript — installs the media capture hook before page script runs
+    implementation("androidx.webkit:webkit:1.11.0")
+
     // Lifecycle
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.lifecycle:lifecycle-process:2.7.0")
 
     // Ads
     implementation("com.google.android.gms:play-services-ads:23.6.0")
+
+    // Ad-free subscription
+    implementation("com.android.billingclient:billing:8.0.0")
 }

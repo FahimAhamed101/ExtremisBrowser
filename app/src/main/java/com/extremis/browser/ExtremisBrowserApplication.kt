@@ -12,6 +12,8 @@ import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.MobileAds
 import com.google.android.gms.ads.appopen.AppOpenAd
+import com.extremis.browser.billing.BillingManager
+import com.extremis.browser.utils.BrowserPreferences
 
 class ExtremisBrowserApplication : Application(), Application.ActivityLifecycleCallbacks,
     DefaultLifecycleObserver {
@@ -23,6 +25,7 @@ class ExtremisBrowserApplication : Application(), Application.ActivityLifecycleC
         super<Application>.onCreate()
         registerActivityLifecycleCallbacks(this)
         ProcessLifecycleOwner.get().lifecycle.addObserver(this)
+        BillingManager.start(this)
         MobileAds.initialize(this) {
             if (!IncognitoModeState.isIncognitoActive) {
                 appOpenAdManager.loadAd(this)
@@ -70,6 +73,10 @@ class ExtremisBrowserApplication : Application(), Application.ActivityLifecycleC
         private var loadTime = 0L
 
         fun loadAd(application: Application) {
+            // Whole-screen ad disabled by AdConfig.FULL_SCREEN_ADS_ENABLED. Returning before the
+            // request is made also avoids fetching an ad that would never be shown.
+            if (!AdConfig.FULL_SCREEN_ADS_ENABLED) return
+            if (BrowserPreferences.get(application).adFree) return
             if (IncognitoModeState.isIncognitoActive) return
             if (isLoadingAd || isAdAvailable()) return
 
@@ -93,6 +100,8 @@ class ExtremisBrowserApplication : Application(), Application.ActivityLifecycleC
         }
 
         fun showAdIfAvailable(activity: Activity) {
+            if (!AdConfig.FULL_SCREEN_ADS_ENABLED) return
+            if (BrowserPreferences.get(activity).adFree) return
             if (IncognitoModeState.isIncognitoActive) return
             if (isShowingAd) return
 

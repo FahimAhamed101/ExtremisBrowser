@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Search field used on the New Tab Page and in the tab switcher. -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
     <solid android:color="@color/chrome_search_bg" />
-    <corners android:radius="28dp" />
-    <padding
-        android:left="16dp"
-        android:right="16dp" />
+    <corners android:radius="@dimen/chrome_omnibox_radius" />
 </shape>

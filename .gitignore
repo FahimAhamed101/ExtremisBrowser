@@ -6,6 +6,8 @@
 /app/build
 /.android-home
 /debug.keystore
+/local.properties.bak
+/hs_err_pid*.log
 /ExtremisBrowser_project.zip
 *.apk
 *.aab

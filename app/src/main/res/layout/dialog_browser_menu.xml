@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/menuRoot"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/chrome_sheet_bg"
+    android:overScrollMode="never">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="16dp">
+
+        <View
+            android:layout_width="32dp"
+            android:layout_height="4dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/chrome_sheet_handle" />
+
+        <LinearLayout
+            android:id="@+id/menuHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="@dimen/chrome_gutter"
+            android:paddingTop="14dp"
+            android:paddingEnd="@dimen/chrome_gutter"
+            android:paddingBottom="2dp" />
+
+        <!-- Chrome's contextual quick-action row -->
+        <LinearLayout
+            android:id="@+id/quickActions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="8dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="10dp">
+
+            <ImageButton
+                android:id="@+id/actionForward"
+                style="@style/Widget.Extremis.SheetIconButton"
+                android:contentDescription="@string/forward"
+                android:src="@drawable/ic_arrow_forward_24" />
+
+            <ImageButton
+                android:id="@+id/actionBookmark"
+                style="@style/Widget.Extremis.SheetIconButton"
+                android:contentDescription="@string/save_bookmark"
+                android:src="@drawable/ic_star_outline_24" />
+
+            <ImageButton
+                android:id="@+id/actionShare"
+                style="@style/Widget.Extremis.SheetIconButton"
+                android:contentDescription="@string/share"
+                android:src="@drawable/ic_share_24" />
+
+            <ImageButton
+                android:id="@+id/actionDownload"
+                style="@style/Widget.Extremis.SheetIconButton"
+                android:contentDescription="@string/downloads"
+                android:src="@drawable/ic_download_24" />
+
+            <ImageButton
+                android:id="@+id/actionReload"
+                style="@style/Widget.Extremis.SheetIconButton"
+                android:contentDescription="@string/refresh"
+                android:src="@drawable/ic_reload_24" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/chrome_divider_height"
+            android:background="@color/chrome_outline" />
+
+        <LinearLayout
+            android:id="@+id/menuItems"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

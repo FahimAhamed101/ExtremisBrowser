@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/chrome_page_bg">
@@ -9,38 +11,56 @@
         android:id="@+id/browserContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/chrome_page_bg"
         android:orientation="vertical">
 
+        <!-- ==========================================================
+             Chrome toolbar: back arrow + omnibox + tab counter + menu
+             ========================================================== -->
         <LinearLayout
             android:id="@+id/topControls"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:minHeight="@dimen/chrome_toolbar_height"
+            android:background="@color/chrome_page_bg"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingHorizontal="12dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="8dp">
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp">
 
             <ImageButton
-                android:id="@+id/homeButton"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:id="@+id/backButton"
+                android:layout_width="@dimen/chrome_icon_button_size"
+                android:layout_height="@dimen/chrome_icon_button_size"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/open"
-                android:padding="8dp"
-                android:src="@drawable/ic_home_24" />
+                android:contentDescription="@string/back"
+                android:padding="@dimen/chrome_icon_padding"
+                android:src="@drawable/ic_arrow_back_24"
+                android:visibility="gone"
+                tools:visibility="visible" />
 
             <LinearLayout
-                android:id="@+id/compactUrlBar"
+                android:id="@+id/omniboxContainer"
                 android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_marginHorizontal="8dp"
+                android:layout_height="@dimen/chrome_omnibox_height"
+                android:layout_marginStart="2dp"
+                android:layout_marginEnd="6dp"
                 android:layout_weight="1"
-                android:background="@drawable/chrome_search_bg"
+                android:background="@drawable/chrome_omnibox_bg"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingStart="16dp"
+                android:paddingStart="4dp"
                 android:paddingEnd="4dp">
+
+                <ImageButton
+                    android:id="@+id/securityIcon"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_marginStart="4dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/site_information"
+                    android:padding="7dp"
+                    android:src="@drawable/ic_search_24" />
 
                 <EditText
                     android:id="@+id/urlInput"
@@ -50,46 +70,59 @@
                     android:background="@android:color/transparent"
                     android:hint="@string/search_or_type_url"
                     android:imeOptions="actionGo"
+                    android:importantForAutofill="no"
                     android:inputType="textUri"
                     android:maxLines="1"
-                    android:padding="0dp"
+                    android:paddingStart="2dp"
+                    android:paddingEnd="2dp"
                     android:singleLine="true"
                     android:textColor="@color/chrome_text"
                     android:textColorHint="@color/chrome_muted"
-                    android:textSize="16sp" />
+                    android:textSize="15sp" />
 
                 <ImageButton
-                    android:id="@+id/reloadButton"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
+                    android:id="@+id/omniVoiceButton"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="@string/refresh"
-                    android:padding="8dp"
-                    android:src="@drawable/ic_reload_24" />
+                    android:contentDescription="@string/voice_search"
+                    android:padding="7dp"
+                    android:src="@drawable/ic_mic_24" />
+
+                <ImageButton
+                    android:id="@+id/omniLensButton"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/image_search"
+                    android:padding="7dp"
+                    android:src="@drawable/ic_camera_24" />
             </LinearLayout>
 
-            <Space
-                android:id="@+id/homeTopSpacer"
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_weight="1" />
-
+            <!--
+                Appears only while the scanner has media for the active tab, so it reads as
+                "this page has something you can save" rather than permanent chrome.
+            -->
             <ImageButton
-                android:id="@+id/profileButton"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:id="@+id/videoDownloadButton"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/settings"
-                android:padding="8dp"
-                android:src="@drawable/ic_account_24" />
+                android:contentDescription="@string/download_video"
+                android:padding="10dp"
+                android:src="@drawable/ic_video_download_24"
+                android:tint="@color/chrome_blue"
+                android:visibility="gone"
+                tools:visibility="visible" />
 
             <TextView
                 android:id="@+id/tabCountButton"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="6dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/chrome_tab_count_bg"
                 android:clickable="true"
+                android:contentDescription="@string/tab_count"
                 android:focusable="true"
                 android:gravity="center"
                 android:textColor="@color/chrome_text"
@@ -98,12 +131,11 @@
 
             <ImageButton
                 android:id="@+id/menuButton"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginStart="6dp"
+                android:layout_width="@dimen/chrome_icon_button_size"
+                android:layout_height="@dimen/chrome_icon_button_size"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/menu"
-                android:padding="8dp"
+                android:padding="@dimen/chrome_icon_padding"
                 android:src="@drawable/ic_more_vert_24" />
         </LinearLayout>
 
@@ -113,7 +145,76 @@
             android:layout_height="wrap_content"
             android:visibility="gone"
             app:indicatorColor="@color/chrome_blue"
-            app:trackColor="@color/chrome_search_bg" />
+            app:trackColor="@color/chrome_outline"
+            app:trackThickness="3dp" />
+
+        <!-- ==========================================================
+             Find in page — ported from KoiBrowser's find_on_page.xml
+             ========================================================== -->
+        <LinearLayout
+            android:id="@+id/findBar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/chrome_omnibox_height"
+            android:background="@color/chrome_search_bg"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="12dp"
+            android:paddingEnd="4dp"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <EditText
+                android:id="@+id/findInput"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:hint="@string/find_in_page_hint"
+                android:imeOptions="actionSearch"
+                android:importantForAutofill="no"
+                android:inputType="text"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textColor="@color/chrome_text"
+                android:textColorHint="@color/chrome_muted"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/findCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dp"
+                android:textColor="@color/chrome_muted"
+                android:textSize="13sp"
+                tools:text="1/12" />
+
+            <ImageButton
+                android:id="@+id/findPrevButton"
+                android:layout_width="@dimen/chrome_icon_button_size"
+                android:layout_height="@dimen/chrome_icon_button_size"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/find_previous"
+                android:padding="@dimen/chrome_icon_padding"
+                android:src="@drawable/ic_find_prev_24" />
+
+            <ImageButton
+                android:id="@+id/findNextButton"
+                android:layout_width="@dimen/chrome_icon_button_size"
+                android:layout_height="@dimen/chrome_icon_button_size"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/find_next"
+                android:padding="@dimen/chrome_icon_padding"
+                android:src="@drawable/ic_find_next_24" />
+
+            <ImageButton
+                android:id="@+id/findCloseButton"
+                android:layout_width="@dimen/chrome_icon_button_size"
+                android:layout_height="@dimen/chrome_icon_button_size"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/close"
+                android:padding="@dimen/chrome_icon_padding"
+                android:src="@drawable/ic_close_24" />
+        </LinearLayout>
 
         <FrameLayout
             android:id="@+id/contentFrame"
@@ -127,59 +228,97 @@
                 android:layout_height="match_parent"
                 android:visibility="gone">
 
-                <WebView
-                    android:id="@+id/webView"
+                <!--
+                    Tabs are WebViews added and removed here at runtime by TabManager.
+                    SwipeRefreshLayout only accepts one direct child, hence the host frame.
+                -->
+                <FrameLayout
+                    android:id="@+id/webHost"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" />
             </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+            <!-- ======================================================
+                 New Tab Page — Chrome layout
+                 ====================================================== -->
             <ScrollView
                 android:id="@+id/homeScroll"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:fillViewport="true">
+                android:fillViewport="true"
+                android:overScrollMode="never">
 
                 <LinearLayout
                     android:id="@+id/homeContent"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@color/chrome_page_bg"
                     android:orientation="vertical"
-                    android:paddingHorizontal="14dp"
-                    android:paddingTop="18dp"
-                    android:paddingBottom="28dp">
+                    android:paddingTop="20dp"
+                    android:paddingBottom="24dp">
 
-                    <TextView
+                    <!-- Google wordmark, one colour per letter (Chrome NTP) -->
+                    <LinearLayout
                         android:id="@+id/googleLogo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="8dp"
-                        android:text="@string/app_name"
-                        android:textColor="@color/extremis_blue"
-                        android:textSize="36sp"
-                        android:textStyle="bold" />
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/logoLetter1"
+                            style="@style/WordmarkLetter"
+                            android:text="@string/logo_letter_1" />
+
+                        <TextView
+                            android:id="@+id/logoLetter2"
+                            style="@style/WordmarkLetter"
+                            android:text="@string/logo_letter_2" />
+
+                        <TextView
+                            android:id="@+id/logoLetter3"
+                            style="@style/WordmarkLetter"
+                            android:text="@string/logo_letter_3" />
+
+                        <TextView
+                            android:id="@+id/logoLetter4"
+                            style="@style/WordmarkLetter"
+                            android:text="@string/logo_letter_4" />
+
+                        <TextView
+                            android:id="@+id/logoLetter5"
+                            style="@style/WordmarkLetter"
+                            android:text="@string/logo_letter_5" />
+
+                        <TextView
+                            android:id="@+id/logoLetter6"
+                            style="@style/WordmarkLetter"
+                            android:text="@string/logo_letter_6" />
+                    </LinearLayout>
 
                     <TextView
                         android:id="@+id/incognitoLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="10dp"
                         android:text="@string/incognito_home"
                         android:textColor="@color/chrome_muted"
-                        android:textSize="16sp"
+                        android:textSize="14sp"
                         android:visibility="gone" />
 
                     <LinearLayout
                         android:id="@+id/homeSearchBar"
                         android:layout_width="match_parent"
-                        android:layout_height="58dp"
+                        android:layout_height="@dimen/chrome_ntp_search_height"
+                        android:layout_marginHorizontal="@dimen/chrome_gutter"
                         android:layout_marginTop="24dp"
                         android:background="@drawable/chrome_search_bg"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
-                        android:paddingStart="22dp"
-                        android:paddingEnd="8dp">
+                        android:paddingStart="20dp"
+                        android:paddingEnd="4dp">
 
                         <EditText
                             android:id="@+id/homeSearchInput"
@@ -189,19 +328,20 @@
                             android:background="@android:color/transparent"
                             android:hint="@string/search_or_type_url"
                             android:imeOptions="actionGo"
+                            android:importantForAutofill="no"
                             android:inputType="textUri"
                             android:maxLines="1"
                             android:singleLine="true"
                             android:textColor="@color/chrome_text"
-                            android:textColorHint="@color/chrome_text"
-                            android:textSize="16sp" />
+                            android:textColorHint="@color/chrome_muted"
+                            android:textSize="15sp" />
 
                         <ImageButton
                             android:id="@+id/voiceButton"
                             android:layout_width="40dp"
                             android:layout_height="40dp"
                             android:background="?attr/selectableItemBackgroundBorderless"
-                            android:contentDescription="@string/search_or_type_url"
+                            android:contentDescription="@string/voice_search"
                             android:padding="8dp"
                             android:src="@drawable/ic_mic_24" />
 
@@ -210,207 +350,104 @@
                             android:layout_width="40dp"
                             android:layout_height="40dp"
                             android:background="?attr/selectableItemBackgroundBorderless"
-                            android:contentDescription="@string/search_or_type_url"
+                            android:contentDescription="@string/image_search"
                             android:padding="8dp"
                             android:src="@drawable/ic_camera_24" />
                     </LinearLayout>
 
+                    <!-- Most visited tiles -->
                     <HorizontalScrollView
                         android:id="@+id/quickLinksScroller"
                         android:layout_width="match_parent"
-                        android:layout_height="110dp"
-                        android:layout_marginTop="22dp"
-                        android:background="@drawable/chrome_card_bg"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
                         android:clipToPadding="false"
-                        android:fillViewport="false"
                         android:overScrollMode="never"
-                        android:paddingHorizontal="14dp"
+                        android:paddingStart="@dimen/chrome_gutter"
+                        android:paddingEnd="@dimen/chrome_gutter"
                         android:scrollbars="none">
 
                         <LinearLayout
                             android:id="@+id/quickLinksContainer"
                             android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:gravity="center_vertical"
+                            android:layout_height="wrap_content"
                             android:orientation="horizontal" />
                     </HorizontalScrollView>
-
-                    <LinearLayout
-                        android:id="@+id/continueCard"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:background="@drawable/chrome_card_bg"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:orientation="vertical"
-                        android:padding="16dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="@string/continue_with_this_tab"
-                                android:textColor="@color/chrome_text"
-                                android:textSize="14sp" />
-
-                            <TextView
-                                android:id="@+id/seeMoreButton"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/see_more"
-                                android:textColor="@color/chrome_blue"
-                                android:textSize="14sp" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="14dp"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="84dp"
-                                android:layout_height="84dp"
-                                android:background="@drawable/continue_thumb_bg"
-                                android:gravity="center"
-                                android:padding="8dp"
-                                android:text="Resume\nyour last\npage"
-                                android:textColor="@color/extremis_blue"
-                                android:textSize="11sp" />
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="16dp"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:text="Continue browsing from your recent session"
-                                    android:textColor="@color/chrome_text"
-                                    android:textSize="17sp" />
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="26dp"
-                                    android:text="@string/app_name"
-                                    android:textColor="@color/chrome_muted"
-                                    android:textSize="12sp" />
-                            </LinearLayout>
-                        </LinearLayout>
-                    </LinearLayout>
 
                     <FrameLayout
                         android:id="@+id/nativeAdContainer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="@dimen/chrome_gutter"
                         android:layout_marginTop="16dp"
                         android:visibility="gone" />
 
+                    <!-- Feed: real browsing history rendered as Discover cards -->
                     <LinearLayout
-                        android:id="@+id/discoverCard"
+                        android:id="@+id/feedHeader"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:background="@drawable/chrome_card_bg"
-                        android:orientation="vertical"
-                        android:padding="16dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="@string/discover"
-                                android:textColor="@color/chrome_text"
-                                android:textSize="14sp" />
-
-                            <ImageButton
-                                android:layout_width="36dp"
-                                android:layout_height="36dp"
-                                android:background="?attr/selectableItemBackgroundBorderless"
-                                android:padding="8dp"
-                                android:src="@drawable/ic_more_vert_24" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:id="@+id/discoverPrimary"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:clickable="true"
-                            android:focusable="true"
-                            android:gravity="center_vertical"
-                            android:orientation="horizontal">
-
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:text="Keep your browsing private with tabs, downloads, and saved pages"
-                                    android:textColor="@color/chrome_text"
-                                    android:textSize="18sp" />
-
-                                <TextView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginTop="16dp"
-                                    android:text="Extremis guide"
-                                    android:textColor="@color/chrome_muted"
-                                    android:textSize="12sp" />
-                            </LinearLayout>
-
-                            <TextView
-                                android:layout_width="72dp"
-                                android:layout_height="72dp"
-                                android:layout_marginStart="12dp"
-                                android:background="@drawable/discover_image_bg"
-                                android:gravity="center"
-                                android:text="TIP"
-                                android:textColor="@color/chrome_red"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_marginTop="16dp"
-                            android:background="#ECECF4" />
+                        android:layout_marginTop="20dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="@dimen/chrome_gutter"
+                        android:paddingBottom="8dp">
 
                         <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="120dp"
-                            android:layout_marginTop="16dp"
-                            android:background="@drawable/discover_image_bg"
-                            android:gravity="center"
-                            android:text="EXTREMIS BROWSER"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/discover"
                             android:textColor="@color/chrome_text"
-                            android:textSize="22sp"
+                            android:textSize="16sp"
                             android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/seeMoreButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="?attr/selectableItemBackground"
+                            android:padding="6dp"
+                            android:text="@string/see_more"
+                            android:textColor="@color/chrome_blue"
+                            android:textSize="14sp" />
                     </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/discoverCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
                 </LinearLayout>
             </ScrollView>
+
+            <!-- ======================================================
+                 Omnibox autocomplete — ported from KoiBrowser's
+                 MaterialSearchView / two_line_autocomplete.xml.
+                 Sits at the top of the content area so it lines up
+                 directly beneath the omnibox.
+                 ====================================================== -->
+            <LinearLayout
+                android:id="@+id/suggestionPanel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/chrome_page_bg"
+                android:elevation="8dp"
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="gone">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/suggestionList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scrollbars="vertical" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/chrome_outline" />
+            </LinearLayout>
         </FrameLayout>
 
         <FrameLayout
@@ -422,53 +459,62 @@
             android:visibility="gone" />
     </LinearLayout>
 
+    <!-- ==========================================================
+         Tab switcher — Chrome grid of tab cards
+         ========================================================== -->
     <LinearLayout
         android:id="@+id/tabSwitcherPanel"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/chrome_page_bg"
         android:orientation="vertical"
-        android:paddingTop="12dp"
         android:visibility="gone">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="54dp"
+            android:layout_height="@dimen/chrome_toolbar_height"
+            android:background="@color/chrome_page_bg"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingHorizontal="14dp">
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp">
 
             <ImageButton
                 android:id="@+id/newTabButton"
-                android:layout_width="42dp"
-                android:layout_height="42dp"
+                android:layout_width="@dimen/chrome_icon_button_size"
+                android:layout_height="@dimen/chrome_icon_button_size"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/new_tab"
-                android:padding="8dp"
+                android:padding="@dimen/chrome_icon_padding"
                 android:src="@drawable/ic_add_24" />
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:text="@string/tabs"
+                android:textColor="@color/chrome_text"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tabSwitcherCount"
-                android:layout_width="42dp"
-                android:layout_height="42dp"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/chrome_tab_count_bg"
                 android:gravity="center"
-                android:textColor="@color/chrome_blue"
+                android:textColor="@color/chrome_text"
                 android:textSize="13sp"
                 android:textStyle="bold" />
 
             <ImageButton
                 android:id="@+id/tabSwitcherMenuButton"
-                android:layout_width="42dp"
-                android:layout_height="42dp"
-                android:layout_marginStart="12dp"
+                android:layout_width="@dimen/chrome_icon_button_size"
+                android:layout_height="@dimen/chrome_icon_button_size"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/menu"
-                android:padding="8dp"
+                android:padding="@dimen/chrome_icon_padding"
                 android:src="@drawable/ic_more_vert_24" />
         </LinearLayout>
 
@@ -476,27 +522,41 @@
             android:id="@+id/tabSearchInput"
             android:layout_width="match_parent"
             android:layout_height="46dp"
-            android:layout_marginHorizontal="16dp"
+            android:layout_marginHorizontal="@dimen/chrome_gutter"
             android:layout_marginTop="4dp"
             android:background="@drawable/chrome_search_bg"
             android:hint="@string/search_your_tabs"
             android:imeOptions="actionSearch"
+            android:importantForAutofill="no"
             android:inputType="text"
             android:maxLines="1"
-            android:paddingHorizontal="16dp"
+            android:paddingHorizontal="18dp"
             android:singleLine="true"
             android:textColor="@color/chrome_text"
-            android:textColorHint="@color/chrome_text"
+            android:textColorHint="@color/chrome_muted"
             android:textSize="14sp" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/tabsRecycler"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="12dp"
             android:layout_weight="1"
             android:clipToPadding="false"
-            android:paddingHorizontal="16dp"
-            android:paddingBottom="24dp" />
+            android:paddingHorizontal="@dimen/chrome_gutter"
+            android:paddingBottom="24dp"
+            android:scrollbars="none" />
     </LinearLayout>
+
+    <!-- ==========================================================
+         Fullscreen video surface — ported from KoiBrowser's
+         FullscreenVideoView / onShowCustomView handling
+         ========================================================== -->
+    <FrameLayout
+        android:id="@+id/fullscreenContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/black"
+        android:visibility="gone" />
+
 </FrameLayout>

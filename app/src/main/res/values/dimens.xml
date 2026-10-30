@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Chrome toolbar / omnibox metrics -->
+    <dimen name="chrome_toolbar_height">56dp</dimen>
+    <dimen name="chrome_omnibox_height">48dp</dimen>
+    <dimen name="chrome_omnibox_radius">24dp</dimen>
+    <dimen name="chrome_icon_button_size">44dp</dimen>
+    <dimen name="chrome_icon_size">24dp</dimen>
+    <dimen name="chrome_icon_padding">10dp</dimen>
+
+    <!-- Surfaces -->
+    <dimen name="chrome_gutter">16dp</dimen>
+    <dimen name="chrome_gutter_small">12dp</dimen>
+    <dimen name="chrome_gutter_tiny">8dp</dimen>
+    <dimen name="chrome_card_radius">12dp</dimen>
+    <dimen name="chrome_sheet_radius">28dp</dimen>
+    <dimen name="chrome_tile_radius">10dp</dimen>
+    <dimen name="chrome_pill_radius">20dp</dimen>
+
+    <!-- Lists -->
+    <dimen name="chrome_list_row_height">56dp</dimen>
+    <dimen name="chrome_list_row_padding_h">16dp</dimen>
+    <dimen name="chrome_divider_height">1dp</dimen>
+
+    <!-- New Tab Page -->
+    <dimen name="chrome_ntp_logo_size">40sp</dimen>
+    <dimen name="chrome_ntp_search_height">52dp</dimen>
+    <dimen name="chrome_most_visited_icon">48dp</dimen>
+    <dimen name="chrome_most_visited_icon_text">20sp</dimen>
+    <dimen name="chrome_feed_thumb_width">104dp</dimen>
+    <dimen name="chrome_feed_thumb_height">72dp</dimen>
+
+    <!-- Tab switcher -->
+    <dimen name="chrome_tab_card_height">200dp</dimen>
+    <dimen name="chrome_tab_card_radius">12dp</dimen>
+
+    <!-- Bottom sheet menu -->
+    <dimen name="chrome_sheet_row_height">52dp</dimen>
+    <dimen name="chrome_sheet_quick_icon">52dp</dimen>
+
+</resources>

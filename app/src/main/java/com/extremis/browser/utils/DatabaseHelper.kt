@@ -88,6 +88,14 @@ class DatabaseHelper(context: Context) :
         writableDatabase.delete(TABLE_BOOKMARKS, "$COL_ID = ?", arrayOf(id.toString()))
     }
 
+    fun updateBookmark(id: Long, title: String, url: String) {
+        val values = ContentValues().apply {
+            put(COL_TITLE, title)
+            put(COL_URL, url)
+        }
+        writableDatabase.update(TABLE_BOOKMARKS, values, "$COL_ID = ?", arrayOf(id.toString()))
+    }
+
     fun deleteBookmarkByUrl(url: String) {
         writableDatabase.delete(TABLE_BOOKMARKS, "$COL_URL = ?", arrayOf(url))
     }

@@ -1,58 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Primary blue palette -->
-    <color name="extremis_blue">#1565C0</color>
-    <color name="extremis_blue_dark">#0D47A1</color>
-    <color name="extremis_blue_light">#42A5F5</color>
-    <color name="extremis_blue_surface">#E3F2FD</color>
-    <color name="extremis_blue_accent">#2979FF</color>
 
-    <!-- Toolbar / status bar gradient anchors -->
-    <color name="toolbar_start">#0D47A1</color>
-    <color name="toolbar_end">#1976D2</color>
-
-    <!-- URL bar -->
-    <color name="url_bar_bg">#E8F0FE</color>
-    <color name="url_bar_stroke">#90CAF9</color>
-    <color name="url_bar_text">#1A237E</color>
-    <color name="url_bar_hint">#64B5F6</color>
-
-    <!-- Navigation bar -->
-    <color name="nav_bar_bg">#F5F9FF</color>
-    <color name="nav_divider">#BBDEFB</color>
-
-    <!-- Quick‑link chip colors -->
-    <color name="chip_stroke">#90CAF9</color>
-    <color name="chip_text">#1565C0</color>
-
-    <!-- FAB -->
-    <color name="fab_bg">#2962FF</color>
-    <color name="fab_icon">#FFFFFF</color>
-
-    <!-- Basics -->
-    <color name="black">#000000</color>
-    <color name="white">#FFFFFF</color>
-    <color name="page_bg">#FAFCFF</color>
-    <color name="ripple_blue">#331565C0</color>
-
-    <!-- Chrome-like browser surface -->
-    <color name="chrome_page_bg">#F7F5FC</color>
-    <color name="chrome_card_bg">#FFFFFF</color>
-    <color name="chrome_search_bg">#E5E6F2</color>
-    <color name="chrome_quick_bg">#E3E5F1</color>
-    <color name="chrome_text">#171821</color>
-    <color name="chrome_muted">#5B5D6B</color>
-    <color name="chrome_blue">#4F66A3</color>
-    <color name="chrome_red">#D84635</color>
+    <!-- ============================================================
+         Google brand palette (used for the New Tab Page wordmark)
+         ============================================================ -->
     <color name="google_blue">#4285F4</color>
     <color name="google_red">#EA4335</color>
     <color name="google_yellow">#FBBC05</color>
     <color name="google_green">#34A853</color>
 
-    <!-- Incognito surface -->
+    <!-- ============================================================
+         Chrome light surfaces (GM3 / Chrome 120+ palette)
+         ============================================================ -->
+    <color name="chrome_page_bg">#FFFFFF</color>
+    <color name="chrome_card_bg">#FFFFFF</color>
+    <color name="chrome_search_bg">#F1F3F4</color>
+    <color name="chrome_quick_bg">#F1F3F4</color>
+    <color name="chrome_text">#202124</color>
+    <color name="chrome_muted">#5F6368</color>
+    <color name="chrome_outline">#DADCE0</color>
+    <color name="chrome_outline_strong">#BDC1C6</color>
+    <color name="chrome_icon">#5F6368</color>
+    <color name="chrome_blue">#1A73E8</color>
+    <color name="chrome_blue_dark">#1967D2</color>
+    <color name="chrome_blue_container">#E8F0FE</color>
+    <color name="chrome_red">#D93025</color>
+    <color name="chrome_green">#188038</color>
+    <color name="chrome_yellow">#F9AB00</color>
+    <color name="chrome_scrim">#8A000000</color>
+    <color name="chrome_ripple">#1F202124</color>
+    <color name="chrome_ripple_blue">#1F1A73E8</color>
+    <color name="chrome_sheet_handle">#DADCE0</color>
+    <color name="chrome_thumb_placeholder">#E8EAED</color>
+
+    <!-- ============================================================
+         Chrome Incognito (dark) surfaces
+         ============================================================ -->
     <color name="incognito_page_bg">#202124</color>
-    <color name="incognito_card_bg">#2B2C31</color>
-    <color name="incognito_search_bg">#30323A</color>
-    <color name="incognito_text">#F1F3F4</color>
-    <color name="incognito_muted">#BDC1C6</color>
+    <color name="incognito_card_bg">#35363A</color>
+    <color name="incognito_search_bg">#35363A</color>
+    <color name="incognito_text">#E8EAED</color>
+    <color name="incognito_muted">#9AA0A6</color>
+    <color name="incognito_outline">#5F6368</color>
+
+    <!-- ============================================================
+         Legacy aliases (kept so existing references keep compiling)
+         ============================================================ -->
+    <color name="extremis_blue">@color/chrome_blue</color>
+    <color name="extremis_blue_dark">@color/chrome_blue_dark</color>
+    <color name="extremis_blue_light">#669DF6</color>
+    <color name="extremis_blue_surface">@color/chrome_blue_container</color>
+    <color name="extremis_blue_accent">@color/chrome_blue</color>
+
+    <color name="toolbar_start">@color/chrome_page_bg</color>
+    <color name="toolbar_end">@color/chrome_page_bg</color>
+
+    <color name="url_bar_bg">@color/chrome_search_bg</color>
+    <color name="url_bar_stroke">@color/chrome_outline</color>
+    <color name="url_bar_text">@color/chrome_text</color>
+    <color name="url_bar_hint">@color/chrome_muted</color>
+
+    <color name="nav_bar_bg">@color/chrome_page_bg</color>
+    <color name="nav_divider">@color/chrome_outline</color>
+
+    <color name="chip_stroke">@color/chrome_outline</color>
+    <color name="chip_text">@color/chrome_blue</color>
+
+    <color name="fab_bg">@color/chrome_blue</color>
+    <color name="fab_icon">#FFFFFF</color>
+
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="page_bg">@color/chrome_page_bg</color>
+    <color name="ripple_blue">@color/chrome_ripple_blue</color>
+
 </resources>

@@ -1,34 +1,166 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="Theme.ExtremisBrowser" parent="Theme.Material3.Light.NoActionBar">
-        <item name="colorPrimary">@color/extremis_blue</item>
-        <item name="colorPrimaryContainer">@color/extremis_blue_surface</item>
+    <!-- ============================================================
+         App theme — light Chrome surface with a light status bar.
+         ============================================================ -->
+    <style name="Theme.ExtremisBrowser" parent="Theme.ExtremisBrowser.Base" />
+
+    <style name="Theme.ExtremisBrowser.Base" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/chrome_blue</item>
         <item name="colorOnPrimary">@color/white</item>
-        <item name="colorSecondary">@color/extremis_blue_accent</item>
-        <item name="colorSurface">@color/page_bg</item>
-        <item name="android:statusBarColor">@color/extremis_blue_dark</item>
-        <item name="android:navigationBarColor">@color/nav_bar_bg</item>
+        <item name="colorPrimaryContainer">@color/chrome_blue_container</item>
+        <item name="colorOnPrimaryContainer">@color/chrome_blue_dark</item>
+        <item name="colorSecondary">@color/chrome_blue</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSurface">@color/chrome_page_bg</item>
+        <item name="colorOnSurface">@color/chrome_text</item>
+        <item name="colorOnSurfaceVariant">@color/chrome_muted</item>
+        <item name="colorOutline">@color/chrome_outline</item>
+        <item name="colorOutlineVariant">@color/chrome_outline</item>
+        <item name="android:colorBackground">@color/chrome_page_bg</item>
+        <item name="colorSurfaceContainer">@color/chrome_page_bg</item>
+        <item name="colorSurfaceContainerHigh">@color/chrome_page_bg</item>
+        <item name="android:statusBarColor">@color/chrome_page_bg</item>
+        <item name="android:navigationBarColor">@color/chrome_page_bg</item>
+        <item name="android:windowLightStatusBar">true</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
-        <item name="android:colorControlHighlight">@color/ripple_blue</item>
+        <item name="android:colorControlHighlight">@color/chrome_ripple</item>
+        <item name="android:textColorPrimary">@color/chrome_text</item>
+        <item name="android:textColorSecondary">@color/chrome_muted</item>
+        <item name="bottomSheetDialogTheme">@style/Theme.Extremis.BottomSheet</item>
+        <item name="materialAlertDialogTheme">@style/Theme.Extremis.AlertDialog</item>
     </style>
 
-    <!-- Outlined chip / quick-link button override -->
+    <!-- ============================================================
+         Bottom sheet menu (Chrome's 3-dot menu)
+         ============================================================ -->
+    <style name="Theme.Extremis.BottomSheet" parent="Theme.Material3.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Widget.Extremis.BottomSheet</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
+    </style>
+
+    <style name="Widget.Extremis.BottomSheet" parent="Widget.Material3.BottomSheet.Modal">
+        <item name="backgroundTint">@color/chrome_card_bg</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.Extremis.Sheet</item>
+    </style>
+
+    <style name="ShapeAppearance.Extremis.Sheet" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">@dimen/chrome_sheet_radius</item>
+        <item name="cornerSizeTopRight">@dimen/chrome_sheet_radius</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+    </style>
+
+    <!-- ============================================================
+         Dialogs
+         ============================================================ -->
+    <style name="Theme.Extremis.AlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="colorPrimary">@color/chrome_blue</item>
+        <item name="colorSurface">@color/chrome_card_bg</item>
+        <item name="colorOnSurface">@color/chrome_text</item>
+    </style>
+
+    <!-- ============================================================
+         Typography
+         ============================================================ -->
+    <style name="TextAppearance.Extremis.Title" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/chrome_text</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="TextAppearance.Extremis.Body" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/chrome_text</item>
+    </style>
+
+    <style name="TextAppearance.Extremis.Caption" parent="TextAppearance.Material3.BodySmall">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/chrome_muted</item>
+    </style>
+
+    <!-- ============================================================
+         Buttons / chips
+         ============================================================ -->
     <style name="Widget.Extremis.OutlinedButton" parent="Widget.Material3.Button.OutlinedButton">
-        <item name="strokeColor">@color/chip_stroke</item>
-        <item name="android:textColor">@color/chip_text</item>
+        <item name="strokeColor">@color/chrome_outline</item>
+        <item name="android:textColor">@color/chrome_blue</item>
         <item name="cornerRadius">20dp</item>
-        <item name="android:textSize">13sp</item>
-        <item name="android:minHeight">36dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:minHeight">40dp</item>
+        <item name="android:textAllCaps">false</item>
     </style>
 
-    <!-- Nav bar icon button style -->
+    <style name="Widget.Extremis.TextButton" parent="Widget.Material3.Button.TextButton">
+        <item name="android:textColor">@color/chrome_blue</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:minHeight">40dp</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
     <style name="Widget.Extremis.NavButton" parent="Widget.Material3.Button.OutlinedButton">
-        <item name="strokeColor">@color/nav_divider</item>
-        <item name="android:textColor">@color/extremis_blue</item>
+        <item name="strokeColor">@color/chrome_outline</item>
+        <item name="android:textColor">@color/chrome_blue</item>
         <item name="cornerRadius">12dp</item>
         <item name="android:textSize">12sp</item>
         <item name="android:minHeight">38dp</item>
+    </style>
+
+    <!-- ============================================================
+         Toolbar — Chrome's flat white app bar with dark text
+         ============================================================ -->
+    <style name="Widget.Extremis.Toolbar" parent="Widget.Material3.Toolbar">
+        <item name="android:background">@color/chrome_page_bg</item>
+        <item name="titleTextColor">@color/chrome_text</item>
+        <item name="titleTextAppearance">@style/TextAppearance.Extremis.Title</item>
+        <item name="navigationIconTint">@color/chrome_icon</item>
+        <item name="android:elevation">0dp</item>
+        <item name="android:theme">@style/ThemeOverlay.Extremis.Toolbar</item>
+    </style>
+
+    <style name="ThemeOverlay.Extremis.Toolbar" parent="">
+        <item name="colorControlNormal">@color/chrome_icon</item>
+        <item name="android:textColorPrimary">@color/chrome_text</item>
+        <item name="actionMenuTextColor">@color/chrome_text</item>
+    </style>
+
+    <!-- ============================================================
+         New Tab Page wordmark — one colour per letter
+         ============================================================ -->
+    <style name="WordmarkLetter" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/chrome_ntp_logo_size</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <!-- ============================================================
+         Chrome menu (bottom sheet) rows
+         ============================================================ -->
+    <style name="Widget.Extremis.SheetRow" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/chrome_sheet_row_height</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingStart">@dimen/chrome_gutter</item>
+        <item name="android:paddingEnd">@dimen/chrome_gutter</item>
+        <item name="android:textColor">@color/chrome_text</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
+
+    <style name="Widget.Extremis.SheetIconButton" parent="">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">@dimen/chrome_sheet_quick_icon</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:padding">14dp</item>
+        <item name="android:scaleType">fitCenter</item>
     </style>
 
 </resources>

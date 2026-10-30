@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/suggestionRow"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/chrome_list_row_height"
+    android:background="?attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="@dimen/chrome_gutter"
+    android:paddingEnd="@dimen/chrome_gutter">
+
+    <ImageView
+        android:id="@+id/suggestionIcon"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_search_24" />
+
+    <TextView
+        android:id="@+id/suggestionText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/chrome_text"
+        android:textSize="16sp"
+        tools:text="weather today" />
+
+    <ImageView
+        android:id="@+id/suggestionAction"
+        android:layout_width="22dp"
+        android:layout_height="22dp"
+        android:contentDescription="@string/copy_link"
+        android:padding="2dp"
+        android:src="@drawable/ic_arrow_forward_24"
+        android:visibility="gone"
+        tools:visibility="gone" />
+</LinearLayout>

@@ -2,8 +2,9 @@
     android:width="24dp"
     android:height="24dp"
     android:viewportWidth="24"
-    android:viewportHeight="24">
+    android:viewportHeight="24"
+    android:tint="@color/chrome_icon">
     <path
         android:fillColor="#202124"
-        android:pathData="M4,10l2,-5h12l2,5H4zM7,12a4,4 0,1 0,0 8,4 4,0 0,0 0,-8M17,12a4,4 0,1 0,0 8,4 4,0 0,0 0,-8M7,14a2,2 0,1 1,0 4,2 2,0 0,1 0,-4M17,14a2,2 0,1 1,0 4,2 2,0 0,1 0,-4M10.5,15h3v2h-3z" />
+        android:pathData="M17.5,10.5l-1.9,-4.5H8.4L6.5,10.5h11zM7.4,12.5c-2.2,0 -4,1.8 -4,4s1.8,4 4,4 4,-1.8 4,-4 -1.8,-4 -4,-4zM16.6,12.5c-2.2,0 -4,1.8 -4,4s1.8,4 4,4 4,-1.8 4,-4 -1.8,-4 -4,-4zM10.6,14.6h2.8v1.8h-2.8z" />
 </vector>

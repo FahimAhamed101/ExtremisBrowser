@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Bottom sheet surface: rounded top corners, flush with the screen bottom. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/chrome_card_bg" />
+    <corners
+        android:topLeftRadius="@dimen/chrome_sheet_radius"
+        android:topRightRadius="@dimen/chrome_sheet_radius"
+        android:bottomLeftRadius="0dp"
+        android:bottomRightRadius="0dp" />
+</shape>

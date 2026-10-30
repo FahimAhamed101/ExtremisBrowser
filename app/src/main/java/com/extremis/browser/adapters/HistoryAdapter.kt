@@ -2,14 +2,20 @@ package com.extremis.browser.adapters
 
 import android.text.format.DateUtils
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.extremis.browser.databinding.ItemHistoryBinding
 import com.extremis.browser.models.HistoryItem
+import com.extremis.browser.utils.FaviconLoader
 
+/**
+ * Chrome-style history list. The second line shows the URL followed by how long ago the page
+ * was visited, which is what Chrome does inside each day group.
+ */
 class HistoryAdapter(
     private val onOpen: (HistoryItem) -> Unit,
-    private val onDelete: (HistoryItem) -> Unit
+    private val onMenu: (HistoryItem, View) -> Unit
 ) : RecyclerView.Adapter<HistoryAdapter.HistoryViewHolder>() {
 
     private val items = mutableListOf<HistoryItem>()
@@ -40,11 +46,15 @@ class HistoryAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: HistoryItem) {
-            binding.titleView.text = item.title
-            binding.urlView.text = item.url
-            binding.timeView.text = DateUtils.getRelativeTimeSpanString(item.timestamp)
+            val title = item.title.trim().ifBlank {
+                FaviconLoader.hostOf(item.url) ?: item.url
+            }
+            binding.titleView.text = title
+            binding.subtitleView.text = "${item.url} \u00B7 " +
+                DateUtils.getRelativeTimeSpanString(item.timestamp)
+            FaviconLoader.load(item.url, binding.faviconView)
             binding.root.setOnClickListener { onOpen(item) }
-            binding.deleteButton.setOnClickListener { onDelete(item) }
+            binding.moreButton.setOnClickListener { onMenu(item, binding.moreButton) }
         }
     }
 }
